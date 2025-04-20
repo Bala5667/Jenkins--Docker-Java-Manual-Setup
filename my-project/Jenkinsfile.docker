@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_IMAGE = 'my-java-app:latest'
+    }
+    stages {
+        // Docker Image Creation Stage: Creates the Docker image after successful tests
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                // Build the Docker image using the Dockerfile
+                sh '''
+                    docker build -t $DOCKER_IMAGE .
+                '''
+            }
+        }
+    }
+}
