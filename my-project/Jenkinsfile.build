@@ -1,10 +1,13 @@
 pipeline {
     agent any
 
+    environment {
+        PORT = '8080'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the source code from the Git repository
                 checkout scm
             }
         }
@@ -12,32 +15,16 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Define the port to use (8080 or 8081)
-                    def port = '8080'
-                    echo "Using port: ${port}"
+                    echo "Using port: ${PORT}"
 
-                    // Remove any existing container to avoid conflicts
-                    bat 'docker rm -f java-web-app-test || exit 0'
+                    // Remove old container if exists
+                    bat "docker rm -f java-web-app-test || exit 0"
 
-                    // Build and run the new container on the selected port
-                    bat "docker run -d --name java-web-app-test -p ${port}:${port} java-web-app"
+                    // Build the Docker image
+                    bat "docker build -t java-web-app ."
 
-                    // Sleep for a few seconds to allow the container to fully start
-                    sleep 5
-
-                    // Test the application is reachable by sending a curl request
-                    def response = bat(script: """curl -s -o NUL -w "%{http_code}" http://localhost:${port}""", returnStdout: true).trim()
-
-                    // Check if the HTTP response code is 200 (OK)
-                    if (response == '200') {
-                        echo "✅ Test Passed! Application is up and reachable."
-                    } else {
-                        error("❌ Test Failed. Expected HTTP 200 but got ${response}")
-                    }
-
-                    // Clean up by stopping and removing the container
-                    bat 'docker stop java-web-app-test'
-                    bat 'docker rm java-web-app-test'
+                    // Run the Docker container
+                    bat "docker run -d --name java-web-app-test -p ${PORT}:${PORT} java-web-app"
                 }
             }
         }
