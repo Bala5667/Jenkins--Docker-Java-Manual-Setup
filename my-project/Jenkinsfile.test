@@ -14,7 +14,7 @@ pipeline {
                     // Wait for app to be ready
                     sleep 5
 
-                    // Perform the test - Correct curl command!
+                    // Correct curl command
                     def response = bat(script: 'curl -s -o NUL -w "%{http_code}" http://localhost:8081', returnStdout: true).trim()
 
                     // Validate HTTP 200 OK
