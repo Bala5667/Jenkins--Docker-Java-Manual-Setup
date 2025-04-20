@@ -1,34 +1,12 @@
-pipeline {
-    agent any
+stage('Test') {
+    steps {
+        script {
+            echo "Testing application on http://localhost:${PORT}"
 
-    stages {
-        stage('Test') {
-            steps {
-                script {
-                    // Remove existing container if any
-                    bat 'docker rm -f java-web-app-test || exit 0'
-
-                    // Run new container
-                    bat 'docker run -d --name java-web-app-test -p 8081:8080 java-web-app'
-
-                    // Wait for app to be ready
-                    sleep 5
-
-                    // Correct curl command
-                    def response = bat(script: '''curl -s -o NUL -w "%{http_code}" http://localhost:8081''', returnStdout: true).trim()
-
-                    // Validate HTTP 200 OK
-                    if (response == '200') {
-                        echo "✅ Test Passed! Application is up and reachable."
-                    } else {
-                        error("❌ Test Failed. Expected HTTP 200 but got ${response}")
-                    }
-
-                    // Clean up containers
-                    bat 'docker stop java-web-app-test'
-                    bat 'docker rm java-web-app-test'
-                }
-            }
+            // Simple curl test
+            bat """
+                curl --fail http://localhost:${PORT} || exit 1
+            """
         }
     }
 }
