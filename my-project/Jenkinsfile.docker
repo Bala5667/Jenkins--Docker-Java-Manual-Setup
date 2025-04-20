@@ -1,18 +1,14 @@
-pipeline {
-    agent any
-    environment {
-        DOCKER_IMAGE = 'my-java-app:latest'
-    }
-    stages {
-        // Docker Image Creation Stage: Creates the Docker image after successful tests
-        stage('Build Docker Image') {
-            steps {
-                echo 'Building Docker image...'
-                // Build the Docker image using the Dockerfile
-                sh '''
-                    docker build -t $DOCKER_IMAGE .
-                '''
-            }
-        }
+stage('Deploy') {
+    steps {
+        echo 'Deploying: Pushing Docker Image to Docker Hub...'
+
+        // Login to Docker Hub
+        sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+
+        // Tag the image
+        sh 'docker tag myapp:latest yourdockerhubusername/myapp:latest'
+
+        // Push the image
+        sh 'docker push yourdockerhubusername/myapp:latest'
     }
 }
