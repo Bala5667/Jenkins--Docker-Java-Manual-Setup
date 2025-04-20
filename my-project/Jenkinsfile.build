@@ -2,14 +2,18 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code from the Git repository
+                checkout scm
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
-                    // Check if port 8080 is available
-                    def portInUse = bat(script: 'netstat -an | findstr ":8080"', returnStdout: true).trim()
-
-                    // If port 8080 is in use, use 8081 instead
-                    def port = portInUse ? '8081' : '8080'
+                    // Define the port to use (8080 or 8081)
+                    def port = '8080'
                     echo "Using port: ${port}"
 
                     // Remove any existing container to avoid conflicts
