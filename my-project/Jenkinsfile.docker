@@ -1,10 +1,23 @@
 node {
     stage('Deploy') {
         echo 'Deploying to Docker Hub...'
-        bat '''
-        echo %dockerPassword% | docker login -u %dockerUsername% --password-stdin
-        docker tag myapp:latest %dockerUsername%/myapp:latest
-        docker push %dockerUsername%/myapp:latest
-        '''
+
+        // Define your Docker Hub credentials as environment variables
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            // Login to Docker Hub
+            bat """
+            echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+            """
+
+            // Tag the image correctly
+            bat """
+            docker tag myapp:latest %DOCKER_USERNAME%/myapp:latest
+            """
+
+            // Push the image to Docker Hub
+            bat """
+            docker push %DOCKER_USERNAME%/myapp:latest
+            """
+        }
     }
 }
