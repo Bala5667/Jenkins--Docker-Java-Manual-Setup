@@ -1,10 +1,13 @@
-stage('Deploy Docker Container') {
-    // Stop and remove old container (optional, safe)
-    bat '''
-        docker stop my-java-app-container || exit 0
-        docker rm my-java-app-container || exit 0
-    '''
+node {
+    stage('Deploy Docker Container') {
+        // Stop and remove old container (optional, safe)
+        bat '''
+            docker stop my-java-app-container || exit 0
+            docker rm my-java-app-container || exit 0
+        '''
 
-    // Run new container on port 8085
-    bat 'docker run -d -p 8085:8080 --name my-java-app-container my-java-app'
+        // Run new container on port 8085
+        bat 'docker run -d -p 8085:8080 --name my-java-app-container my-java-app'
+    }
 }
+
