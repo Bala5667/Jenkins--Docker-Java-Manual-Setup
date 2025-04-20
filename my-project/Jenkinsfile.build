@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PORT = '8080'
+        PORT = '8085' // 👈 Use 8085 externally
     }
 
     stages {
@@ -23,8 +23,8 @@ pipeline {
                     // Build the Docker image
                     bat "docker build -t java-web-app ."
 
-                    // Run the Docker container
-                    bat "docker run -d --name java-web-app-test -p ${PORT}:${PORT} java-web-app"
+                    // Run new container mapping PORT:8080
+                    bat "docker run -d --name java-web-app-test -p ${PORT}:8080 java-web-app"
                 }
             }
         }
