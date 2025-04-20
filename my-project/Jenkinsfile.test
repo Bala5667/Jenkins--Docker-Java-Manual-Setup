@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     // Run the container
-                    sh 'docker run -d --name java-web-app-test -p 8080:8080 java-web-app'
+                    bat 'docker run -d --name java-web-app-test -p 8080:8080 java-web-app'
                     
                     // Wait for app to start
                     sleep 5
@@ -21,8 +21,8 @@ pipeline {
                     }
 
                     // Cleanup
-                    sh 'docker stop java-web-app-test'
-                    sh 'docker rm java-web-app-test'
+                    bat 'docker stop java-web-app-test'
+                    bat 'docker rm java-web-app-test'
                 }
             }
         }
