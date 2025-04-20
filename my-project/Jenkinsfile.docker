@@ -1,7 +1,8 @@
-node {
-    stage('Deploy') {
-        echo 'Deploying the application...'
-        bat 'docker build -t myapp .'
-        bat 'docker run -d -p 8080:8080 myapp'
+stage('Deploy') {
+    steps {
+        bat '''
+            echo Deploying the application...
+            docker run -d -p 8081:8080 myapp
+        '''
     }
 }
