@@ -1,11 +1,22 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_IMAGE = 'my-java-app:latest'
+    }
     stages {
+        // Build Stage: Compiles the Java project and creates the .jar file
         stage('Build') {
             steps {
-                echo 'Building project...'
-                // Build your code here
+                echo 'Building Java project with Maven...'
+                // Build the Java project using Maven
+                sh 'mvn clean package'
             }
+        }
+    }
+    post {
+        success {
+            // Trigger the next job (Test Job) upon successful build
+            build job: 'Test_Job'
         }
     }
 }
