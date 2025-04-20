@@ -1,17 +1,30 @@
-#!/bin/bash
+pipeline {
+    agent any
 
-docker run -d --name java-web-app-test -p 8080:8080 java-web-app
+    stages {
+        stage('Test') {
+            steps {
+                script {
+                    // Run the container
+                    sh 'docker run -d --name java-web-app-test -p 8080:8080 java-web-app'
+                    
+                    // Wait for app to start
+                    sleep 5
 
-echo "Waiting for app to start..."
-sleep 5
+                    // Check if application is running
+                    def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' http://localhost:8080", returnStdout: true).trim()
 
-response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080)
+                    if (response == '200') {
+                        echo "✅ Test Passed: App is running successfully!"
+                    } else {
+                        error("❌ Test Failed: Got HTTP status ${response}")
+                    }
 
-if [ "$response" == "200" ]; then
-    echo "✅ Test Passed: Application is running successfully!"
-else
-    echo "❌ Test Failed: Application is NOT running! Got HTTP Status: $response"
-fi
-
-docker stop java-web-app-test
-docker rm java-web-app-test
+                    // Cleanup
+                    sh 'docker stop java-web-app-test'
+                    sh 'docker rm java-web-app-test'
+                }
+            }
+        }
+    }
+}
