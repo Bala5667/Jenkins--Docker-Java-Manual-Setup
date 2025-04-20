@@ -16,7 +16,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy built jar from build stage
-COPY --from=build /app/target/your-app.jar .
+COPY --from=build /app/target/my-app-1.0-SNAPSHOT.jar app.jar
 
 # Run the jar
-ENTRYPOINT ["java", "-jar", "your-app.jar"]
+CMD ["java", "-jar", "app.jar"]
