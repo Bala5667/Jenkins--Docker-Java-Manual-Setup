@@ -9,13 +9,13 @@ pipeline {
                     bat 'docker rm -f java-web-app-test || exit 0'
 
                     // Build and run the new container
-                    bat 'docker run -d --name java-web-app-test -p 8081:8080 java-web-app'
+                    bat 'docker run -d --name java-web-app-test -p 8080:8080 java-web-app'
 
                     // Sleep for a few seconds to allow the container to fully start
                     sleep 5
 
                     // Test the application is reachable by sending a curl request
-                    def response = bat(script: '''curl -s -o NUL -w "%{http_code}" http://localhost:8081''', returnStdout: true).trim()
+                    def response = bat(script: '''curl -s -o NUL -w "%{http_code}" http://localhost:8080''', returnStdout: true).trim()
 
                     // Check if the HTTP response code is 200 (OK)
                     if (response == '200') {
