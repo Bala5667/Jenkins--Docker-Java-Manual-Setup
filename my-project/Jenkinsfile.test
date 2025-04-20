@@ -5,16 +5,16 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Always try to remove old container first (if it exists)
+                    // Remove old container if any
                     bat 'docker rm -f java-web-app-test || exit 0'
 
-                    // Run the new container
+                    // Run a new container
                     bat 'docker run -d --name java-web-app-test -p 8081:8080 java-web-app'
 
                     // Wait for app to start
                     sleep 5
 
-                    // Check if application is running
+                    // Correct curl command
                     def response = bat(script: 'curl -s -o NUL -w "%{http_code}" http://localhost:8081', returnStdout: true).trim()
 
                     if (response == '200') {
@@ -23,7 +23,7 @@ pipeline {
                         error("❌ Test Failed: Got HTTP status ${response}")
                     }
 
-                    // Cleanup after test
+                    // Cleanup
                     bat 'docker stop java-web-app-test'
                     bat 'docker rm java-web-app-test'
                 }
