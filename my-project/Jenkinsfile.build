@@ -2,9 +2,32 @@ pipeline {
     agent any
 
     stages {
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                bat 'docker build -t java-web-app .'
+                script {
+                    // Remove any existing container to avoid conflicts
+                    bat 'docker rm -f java-web-app-test || exit 0'
+
+                    // Build and run the new container
+                    bat 'docker run -d --name java-web-app-test -p 8081:8080 java-web-app'
+
+                    // Sleep for a few seconds to allow the container to fully start
+                    sleep 5
+
+                    // Test the application is reachable by sending a curl request
+                    def response = bat(script: '''curl -s -o NUL -w "%{http_code}" http://localhost:8081''', returnStdout: true).trim()
+
+                    // Check if the HTTP response code is 200 (OK)
+                    if (response == '200') {
+                        echo "✅ Test Passed! Application is up and reachable."
+                    } else {
+                        error("❌ Test Failed. Expected HTTP 200 but got ${response}")
+                    }
+
+                    // Clean up by stopping and removing the container
+                    bat 'docker stop java-web-app-test'
+                    bat 'docker rm java-web-app-test'
+                }
             }
         }
     }
