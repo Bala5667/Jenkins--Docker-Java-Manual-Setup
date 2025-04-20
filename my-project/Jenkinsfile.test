@@ -1,11 +1,19 @@
 pipeline {
     agent any
     stages {
+        // Test Stage: Runs the unit tests to ensure the application works
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                // Run your test steps here
+                // Run the tests using Maven (or Gradle)
+                sh 'mvn test'
             }
+        }
+    }
+    post {
+        success {
+            // Trigger the next job (Docker Job) upon successful tests
+            build job: 'Docker_Job'
         }
     }
 }
