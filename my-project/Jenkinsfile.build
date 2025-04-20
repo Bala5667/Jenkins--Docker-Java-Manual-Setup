@@ -2,32 +2,9 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone') {
-            steps {
-                git 'https://github.com/your-repo.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t your-docker-image-name .'
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerhub-password-id', variable: 'DOCKER_PASSWORD')]) {
-                    sh '''
-                    echo $DOCKER_PASSWORD | docker login -u your-dockerhub-username --password-stdin
-                    docker push your-docker-image-name
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy Docker Container') {
-            steps {
-                sh 'docker run -d -p 8080:8080 your-docker-image-name'
             }
         }
     }
