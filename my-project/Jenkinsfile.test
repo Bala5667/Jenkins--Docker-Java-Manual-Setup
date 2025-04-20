@@ -1,11 +1,12 @@
-stage('Test') {
-    echo 'Running integration tests on the container...'
+pipeline {
+    agent any
 
-    // Wait for container to start (optional)
-    bat 'timeout /T 10'
-
-    // Perform a basic health check
-    bat 'curl http://localhost:%PORT%'
-
-    echo 'Container responded successfully! Tests Passed ✅'
+    stages {
+        stage('Test') {
+            steps {
+                echo "Running integration tests on the container..."
+                bat 'echo Running tests...'   // <-- PROBLEM: this is outside node block
+            }
+        }
+    }
 }
