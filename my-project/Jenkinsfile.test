@@ -5,9 +5,12 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Run the container
+                    // Always try to remove old container first (if it exists)
+                    bat 'docker rm -f java-web-app-test || exit 0'
+
+                    // Run the new container
                     bat 'docker run -d --name java-web-app-test -p 8081:8080 java-web-app'
-                    
+
                     // Wait for app to start
                     sleep 5
 
@@ -20,7 +23,7 @@ pipeline {
                         error("❌ Test Failed: Got HTTP status ${response}")
                     }
 
-                    // Cleanup
+                    // Cleanup after test
                     bat 'docker stop java-web-app-test'
                     bat 'docker rm java-web-app-test'
                 }
