@@ -8,22 +8,23 @@ pipeline {
                     // Remove existing container if any
                     bat 'docker rm -f java-web-app-test || exit 0'
 
-                    // Run the container
+                    // Run new container
                     bat 'docker run -d --name java-web-app-test -p 8081:8080 java-web-app'
-                    
-                    // Wait for app to start
+
+                    // Wait for app to be ready
                     sleep 5
 
-                    // Check if application is running
+                    // Perform the test - Correct curl command!
                     def response = bat(script: 'curl -s -o NUL -w "%{http_code}" http://localhost:8081', returnStdout: true).trim()
 
+                    // Validate HTTP 200 OK
                     if (response == '200') {
-                        echo "✅ Test Passed: App is running successfully!"
+                        echo "✅ Test Passed! Application is up and reachable."
                     } else {
-                        error("❌ Test Failed: Got HTTP status ${response}")
+                        error("❌ Test Failed. Expected HTTP 200 but got ${response}")
                     }
 
-                    // Cleanup
+                    // Clean up container
                     bat 'docker stop java-web-app-test'
                     bat 'docker rm java-web-app-test'
                 }
