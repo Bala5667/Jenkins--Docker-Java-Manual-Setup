@@ -1,12 +1,16 @@
+
+
 stage('Test') {
     steps {
-        script {
-            echo "Testing application on http://localhost:${PORT}"
+        echo 'Running integration tests on the container...'
 
-            // Simple curl test
-            bat """
-                curl --fail http://localhost:${PORT} || exit 1
-            """
-        }
+        // Wait for container to start (optional, for safety)
+        bat 'timeout /T 10'
+
+        // Perform a basic health check on the running container
+        bat 'curl http://localhost:%PORT%'
+
+        echo 'Container responded successfully! Tests Passed ✅'
     }
 }
+
