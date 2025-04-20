@@ -1,13 +1,10 @@
 #!/bin/bash
 
-# Step 1: Run your built Docker image
 docker run -d --name java-web-app-test -p 8080:8080 java-web-app
 
-# Step 2: Wait for the application to start
 echo "Waiting for app to start..."
 sleep 5
 
-# Step 3: Test if the application is running
 response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080)
 
 if [ "$response" == "200" ]; then
@@ -16,6 +13,5 @@ else
     echo "❌ Test Failed: Application is NOT running! Got HTTP Status: $response"
 fi
 
-# Step 4: Cleanup - stop and remove the container
 docker stop java-web-app-test
 docker rm java-web-app-test
