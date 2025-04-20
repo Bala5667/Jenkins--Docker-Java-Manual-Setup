@@ -1,16 +1,11 @@
-
-
 stage('Test') {
-    steps {
-        echo 'Running integration tests on the container...'
+    echo 'Running integration tests on the container...'
 
-        // Wait for container to start (optional, for safety)
-        bat 'timeout /T 10'
+    // Wait for container to start (optional)
+    bat 'timeout /T 10'
 
-        // Perform a basic health check on the running container
-        bat 'curl http://localhost:%PORT%'
+    // Perform a basic health check
+    bat 'curl http://localhost:%PORT%'
 
-        echo 'Container responded successfully! Tests Passed ✅'
-    }
+    echo 'Container responded successfully! Tests Passed ✅'
 }
-
