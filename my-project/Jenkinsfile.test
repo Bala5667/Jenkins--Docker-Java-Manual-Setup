@@ -24,7 +24,7 @@ pipeline {
                         error("❌ Test Failed. Expected HTTP 200 but got ${response}")
                     }
 
-                    // Clean up container
+                    // Clean up containers
                     bat 'docker stop java-web-app-test'
                     bat 'docker rm java-web-app-test'
                 }
