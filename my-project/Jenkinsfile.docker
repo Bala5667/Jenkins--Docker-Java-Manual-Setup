@@ -1,8 +1,10 @@
-stage('Deploy') {
-    echo 'Deploying to Docker Hub...'
-    sh '''
-    echo "$dockerPassword" | docker login -u "$dockerUsername" --password-stdin
-    docker tag myapp:latest $dockerUsername/myapp:latest
-    docker push $dockerUsername/myapp:latest
-    '''
+node {
+    stage('Deploy') {
+        echo 'Deploying to Docker Hub...'
+        bat '''
+        echo %dockerPassword% | docker login -u %dockerUsername% --password-stdin
+        docker tag myapp:latest %dockerUsername%/myapp:latest
+        docker push %dockerUsername%/myapp:latest
+        '''
+    }
 }
