@@ -1,25 +1,12 @@
-pipeline {
-    agent any
-    
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Building Docker image...'
-                bat 'docker build -t myapp:latest .'
-            }
-        }
-        
-        stage('Deploy') {
-            steps {
-                echo 'Deploying to Docker Hub...'
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    bat '''
-                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
-                        docker tag myapp:latest %DOCKER_USERNAME%/myapp:latest
-                        docker push %DOCKER_USERNAME%/myapp:latest
-                    '''
-                }
-            }
+stage('Deploy') {
+    steps {
+        echo 'Deploying to Docker Hub...'
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            bat '''
+                docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%
+                docker tag myapp:latest %DOCKER_USERNAME%/myapp:latest
+                docker push %DOCKER_USERNAME%/myapp:latest
+            '''
         }
     }
 }
