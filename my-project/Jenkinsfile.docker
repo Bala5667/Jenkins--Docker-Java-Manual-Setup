@@ -1,7 +1,17 @@
-stage('Deploy Docker Container') {
-    bat '''
-        docker stop my-java-app-container || exit 0
-        docker rm my-java-app-container || exit 0
-        docker run -d -p 8085:8080 --name my-java-app-container balaji5667/myapp:latest
-    '''
+pipeline {
+    agent any
+
+    stages {
+        stage('Deploy Docker Container') {
+            steps {
+                node {
+                    bat '''
+                        docker stop my-java-app-container || exit 0
+                        docker rm my-java-app-container || exit 0
+                        docker run -d -p 8085:8080 --name my-java-app-container balaji5667/myapp:latest
+                    '''
+                }
+            }
+        }
+    }
 }
