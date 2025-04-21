@@ -2,22 +2,22 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = 'Docker-Cred'     // Replace with your Jenkins credential ID for Docker Hub
-        DOCKERHUB_USERNAME = 'balaji5667'          // Your Docker Hub ID
-        IMAGE_NAME = 'java-app'                    // Name you want for the image
+        DOCKERHUB_CREDENTIALS = 'dockerhub-creds'
+        DOCKERHUB_USERNAME = 'balaji5667'
+        IMAGE_NAME = 'java-app'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/Bala5667/Jenkins--Docker-Java-Manual-Setup.git'
+                git branch: 'main', url: 'https://github.com/YOUR-USERNAME/YOUR-REPO.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("${DOCKERHUB_USERNAME}/${IMAGE_NAME}")
+                    def dockerImage = docker.build("${DOCKERHUB_USERNAME}/${IMAGE_NAME}")
                 }
             }
         }
@@ -25,7 +25,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKERHUB_CREDENTIALS}") {
+                    withDockerRegistry(credentialsId: "${DOCKERHUB_CREDENTIALS}", url: '') {
+                        def dockerImage = docker.image("${DOCKERHUB_USERNAME}/${IMAGE_NAME}")
                         dockerImage.push('latest')
                     }
                 }
