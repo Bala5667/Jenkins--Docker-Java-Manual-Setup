@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE_NAME = 'my-java-app' // Your local Docker image name
+        DOCKER_HUB_REPO = 'balaji5667/myapp' // Docker Hub repository (username/repo)
+    }
+
+    stages {
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    // Login to Docker Hub
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    // Push the image to Docker Hub
+                    sh "docker push ${DOCKER_HUB_REPO}:latest"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Docker image pushed successfully to Docker Hub!'
+        }
+        failure {
+            echo 'Failed to push the Docker image.'
+        }
+    }
+}
