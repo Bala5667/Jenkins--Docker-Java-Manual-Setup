@@ -1,17 +1,12 @@
-pipeline {
-    agent any
+node {
+    stage('Deploy Docker Container') {
+        // Stop the container if already running
+        bat 'docker stop my-java-app-container || exit 0'
 
-    stages {
-        stage('Deploy Docker Container') {
-            steps {
-                node {
-                    bat '''
-                        docker stop my-java-app-container || exit 0
-                        docker rm my-java-app-container || exit 0
-                        docker run -d -p 8085:8080 --name my-java-app-container balaji5667/myapp:latest
-                    '''
-                }
-            }
-        }
+        // Remove the container if already exists
+        bat 'docker rm my-java-app-container || exit 0'
+
+        // Run the new container
+        bat 'docker run -d -p 8085:8080 --name my-java-app-container balaji5667/myapp:latest'
     }
 }
